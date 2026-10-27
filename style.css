@@ -81,3 +81,10 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 28px
   footer { font-size: 9px; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; } }
+
+/* Magic Castle Escape card */
+.castle-art { background: linear-gradient(145deg, #e5dcff, #b8d5ff); }
+.castle-building { position: relative; z-index: 1; font-size: 100px; filter: drop-shadow(0 10px 12px #55459b35); }
+.castle-moon { position: absolute; top: 17px; right: 23%; color: #fff9d6; font-size: 45px; text-shadow: 0 0 15px #fff; }
+.castle-key { position: absolute; z-index: 2; bottom: 16px; right: 21%; font-size: 35px; transform: rotate(-25deg); filter: drop-shadow(0 4px 6px #584a952e); }
+.castle-stars { position: absolute; top: 25px; left: 13%; color: #fff; font-size: 26px; letter-spacing: 9px; }
