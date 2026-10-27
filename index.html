@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>숲속 대모험 · 포레스트 러너</title>
+<style>
+:root{--ink:#f5f7ff;--muted:#a8b5d5;--panel:rgba(14,22,47,.82);--line:rgba(255,255,255,.14);--mint:#8cf5c7;--gold:#ffd879}
+*{box-sizing:border-box} html,body{margin:0;min-height:100%;font-family:ui-rounded,"Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif;color:var(--ink)}
+body{background:radial-gradient(ellipse at 15% 0%,#254b78 0%,transparent 42%),radial-gradient(ellipse at 90% 100%,#422d70 0%,transparent 45%),#090f22;display:flex;justify-content:center;align-items:center;padding:18px;overflow-x:hidden}
+.shell{width:min(100%,1000px)}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 14px}
+.brand{display:flex;align-items:center;gap:12px}.logo{width:48px;height:48px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(145deg,#9af6cf,#4dd7c2);font-size:27px;box-shadow:0 8px 30px #54e3bd33}
+h1{font-size:clamp(19px,3vw,27px);margin:0;letter-spacing:-.7px}.sub{font-size:12px;color:var(--muted);margin-top:3px;letter-spacing:.8px}
+.top-actions{display:flex;gap:8px}.iconbtn,.primary,.secondary{font:inherit;border:1px solid var(--line);color:var(--ink);cursor:pointer;transition:.18s}
+.iconbtn{background:#ffffff0b;border-radius:12px;padding:10px 13px}.iconbtn:hover,.secondary:hover{background:#ffffff18;transform:translateY(-1px)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:14px;align-items:stretch}
+.game-card,.side-card{border:1px solid var(--line);background:var(--panel);backdrop-filter:blur(18px);border-radius:22px;box-shadow:0 24px 70px #0004}
+.game-card{padding:12px;min-width:0}.hud{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+.stat{background:#ffffff08;border:1px solid #ffffff0d;border-radius:13px;padding:9px 10px;min-width:0}.stat-label{font-size:10px;letter-spacing:1px;color:var(--muted);font-weight:800}.stat-value{font-size:19px;font-weight:900;margin-top:3px;white-space:nowrap}.stat-value small{font-size:11px;color:var(--muted)}
+.stagebar{height:4px;background:#ffffff12;border-radius:10px;overflow:hidden;margin:0 2px 10px}.stagefill{height:100%;width:10%;background:linear-gradient(90deg,#7cf5c2,#7ddcff);transition:width .35s}
+.canvas-wrap{position:relative;border-radius:15px;overflow:hidden;border:1px solid #ffffff21;background:#15284a;line-height:0}
+canvas{width:100%;height:auto;display:block;aspect-ratio: 800 / 560;touch-action:none}
+.overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:18px;background:linear-gradient(145deg,#0a1228dd,#14264ddd);backdrop-filter:blur(8px);line-height:normal;z-index:3}
+.overlay.hidden{display:none}.modal{width:min(100%,440px);text-align:center}.eyebrow{font-size:11px;font-weight:900;letter-spacing:2.5px;color:var(--mint);text-transform:uppercase}.modal h2{font-size:clamp(24px,4vw,34px);letter-spacing:-1px;margin:9px 0}.modal p{font-size:13px;line-height:1.7;color:#c2cde6;margin:8px auto 18px;max-width:340px}
+.character-row{display:flex;justify-content:center;gap:10px;margin:18px 0}.char{width:100px;padding:12px 8px;border-radius:16px;border:1px solid #ffffff20;background:#ffffff08;cursor:pointer;transition:.2s;color:var(--ink)}.char:hover{transform:translateY(-3px)}.char.selected{border-color:var(--mint);background:#8cf5c71a;box-shadow:0 0 0 2px #8cf5c722}.char .emoji{font-size:31px;display:block;margin-bottom:6px}.char b{font-size:12px}
+.primary{background:linear-gradient(110deg,#79efc2,#67d8ee);border:0;color:#092038;font-weight:900;border-radius:13px;padding:13px 24px;box-shadow:0 8px 25px #5ee6c02a}.primary:hover{filter:brightness(1.08);transform:translateY(-2px)}.secondary{background:#ffffff0b;border-radius:12px;padding:10px 14px;font-weight:800}
+.tipline{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:11px 4px 1px;color:var(--muted);font-size:11px;line-height:1.5}.key{display:inline-grid;place-items:center;min-width:22px;padding:3px 5px;border-radius:5px;border:1px solid #ffffff25;background:#ffffff0c;color:#e9f1ff;font-size:10px;margin:0 1px}
+.side{display:flex;flex-direction:column;gap:14px}.side-card{padding:17px}.side-title{font-size:12px;letter-spacing:1.2px;font-weight:900;color:#b9c7e5;margin-bottom:14px}.mission{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid #ffffff10}.mission:last-child{border:0;padding-bottom:0}.mission-icon{width:36px;height:36px;display:grid;place-items:center;border-radius:12px;background:#ffffff0b;font-size:19px}.mission b{font-size:12px;display:block}.mission small{font-size:11px;color:var(--muted);display:block;margin-top:3px}.pill{margin-left:auto;font-size:11px;font-weight:900;color:var(--gold)}
+.progress-track{height:5px;border-radius:10px;background:#ffffff12;margin-top:8px;overflow:hidden}.progress-track span{height:100%;display:block;width:0;background:linear-gradient(90deg,#ffd879,#ff9b8b);transition:width .2s}
+.tipbox{background:linear-gradient(135deg,#8cf5c712,#78dfff0b);border:1px solid #8cf5c71c;border-radius:15px;padding:13px;font-size:12px;line-height:1.7;color:#c7d6ef}.tipbox strong{color:var(--mint)}
+.shop-overlay{position:absolute;inset:0;z-index:5;background:#071126ed;backdrop-filter:blur(12px);padding:16px;overflow:auto;line-height:normal}.shop-overlay.hidden{display:none}.shop-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.shop-head h2{font-size:22px;margin:0}.shop-meta{font-size:12px;color:#b8c8e8;margin:6px 0 14px}.shop-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.shop-item{border:1px solid #ffffff20;background:#ffffff0a;border-radius:14px;padding:12px;text-align:left;min-width:0}.shop-item .shop-icon{font-size:25px}.shop-item b{display:block;font-size:13px;margin:5px 0}.shop-item p{font-size:11px;line-height:1.5;color:#b8c8e8;margin:0 0 9px;min-height:34px}.shop-item button{width:100%;border:0;border-radius:9px;padding:9px 5px;font-weight:900;background:linear-gradient(110deg,#79efc2,#67d8ee);color:#092038}.shop-item button:disabled{background:#ffffff15;color:#8997b5}.shop-note{font-size:10px;color:#9baecc;margin-top:12px;line-height:1.5}.mobile-controls{display:none;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin-top:10px;user-select:none}.mobile-controls button{border:1px solid #ffffff20;border-radius:13px;background:linear-gradient(180deg,#ffffff16,#ffffff08);color:white;font-size:17px;font-weight:900;padding:13px 4px;touch-action:none;box-shadow:inset 0 1px #ffffff12;min-height:48px}.mobile-controls button:active{background:#8cf5c733;transform:scale(.97)}
+.toast{position:absolute;left:50%;top:14px;transform:translate(-50%,-10px);background:#101b33eF;border:1px solid #ffffff25;border-radius:20px;padding:9px 15px;font-size:12px;font-weight:800;opacity:0;transition:.2s;pointer-events:none;white-space:nowrap;z-index:2}.toast.show{opacity:1;transform:translate(-50%,0)}
+.footer{text-align:center;color:#687899;font-size:10px;margin-top:14px;letter-spacing:.3px}
+@media(max-width:760px){body{padding:8px;align-items:flex-start}.shell{width:100%}.layout{grid-template-columns:1fr;gap:10px}.side{display:grid;grid-template-columns:1fr 1fr;gap:10px}.side-card{padding:13px}.top{margin-bottom:10px}.top-actions .label{display:none}.hud{gap:5px}.stat{padding:8px 7px}.stat-value{font-size:17px}.game-card{padding:7px;border-radius:17px}.tipline{font-size:10px}.mobile-controls{display:grid}.footer{margin-bottom:8px}canvas{width:100%;height:auto;touch-action:none}}
+@media(max-width:420px){.shop-grid{grid-template-columns:1fr 1fr}.side{grid-template-columns:1fr}.brand{gap:8px}.logo{width:41px;height:41px}.top-actions{gap:4px}.iconbtn{padding:8px 9px}.hud{grid-template-columns:repeat(4,minmax(0,1fr))}.stat-label{font-size:9px}.stat-value{font-size:14px}.stat{padding:7px 5px}.mobile-controls{gap:5px}.mobile-controls button{font-size:15px;min-height:46px;padding:11px 2px}.modal p{font-size:12px}.char{width:88px;padding:10px 5px}}
+
+/* Mobile-first refinements */
+@media (max-width: 700px) {
+  body { padding: 0; }
+  .app, .game-wrap, .shell { width: 100% !important; max-width: 100% !important; }
+  .game-frame, .game-container { border-radius: 0 !important; }
+  canvas { touch-action: none; }
+  .mobile-controls { display: flex !important; }
+  .shop-overlay { padding: 12px; }
+  .shop-head h2 { font-size: 20px; }
+  .shop-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+  .shop-item { padding: 10px; }
+  .shop-item p { min-height: 0; }
+  .iconbtn, button { min-height: 42px; }
+}
+@media (max-width: 390px) {
+  .shop-grid { grid-template-columns: 1fr; }
+  .shop-item { display: grid; grid-template-columns: 36px 1fr; column-gap: 8px; }
+  .shop-item .shop-icon { grid-row: span 2; }
+  .shop-item p, .shop-item button { grid-column: 1 / -1; }
+}
+
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="top">
+    <div class="brand"><div class="logo">🌿</div><div><h1>숲속 대모험</h1><div class="sub">FOREST QUEST · MINI PLATFORMER</div></div></div>
+    <div class="top-actions"><button class="iconbtn" id="shopBtn">🛍 <span class="label">상점</span></button><button class="iconbtn" id="soundBtn" title="소리 켜기/끄기">🔊 <span class="label">소리</span></button><button class="iconbtn" id="pauseBtn">Ⅱ <span class="label">일시정지</span></button><button class="iconbtn" id="restartBtn">↻ <span class="label">다시하기</span></button></div>
+  </header>
+  <main class="layout">
+    <section class="game-card">
+      <div class="hud">
+        <div class="stat"><div class="stat-label">SCORE</div><div class="stat-value" id="score">00000</div></div>
+        <div class="stat"><div class="stat-label">LIVES</div><div class="stat-value" id="lives">♥ ♥ ♥</div></div>
+        <div class="stat"><div class="stat-label">STAGE</div><div class="stat-value"><span id="stage">01</span><small> / 20</small></div></div>
+        <div class="stat"><div class="stat-label">BERRIES</div><div class="stat-value" id="berries">0<small> / 0</small></div></div>
+      </div>
+      <div class="stagebar"><div class="stagefill" id="stagefill"></div></div>
+      <div class="canvas-wrap">
+        <canvas id="game" width="800" height="560" aria-label="숲속 대모험 게임 화면"></canvas>
+        <div class="toast" id="toast"></div>
+        <div class="shop-overlay hidden" id="shopOverlay">
+          <div class="shop-head"><h2>🛍 숲속 상점</h2><button class="secondary" id="closeShop">닫기 ✕</button></div>
+          <div class="shop-meta" id="shopMeta">플레이 0판 · 보유 열매 코인 0개</div>
+          <div class="shop-grid" id="shopGrid"></div>
+          <div class="shop-note">아이템은 구매 후 계속 적용돼요. 일부 아이템은 누적 플레이 횟수에 따라 잠금 해제됩니다. 열매를 모으면 코인을 얻을 수 있어요.</div>
+        </div>
+        <div class="overlay" id="overlay">
+          <div class="modal">
+            <div class="eyebrow">A LITTLE FOREST ADVENTURE</div>
+            <h2 id="modalTitle">오늘의 숲을 탐험할까요?</h2>
+            <p id="modalText">반짝이는 열매를 모두 모으고 몬스터를 피해 출구에 도착하세요. 숲의 전설이 시작됩니다!</p>
+            <div class="character-row" id="characters">
+              <button class="char selected" data-char="0"><span class="emoji">🦝</span><b>너구리</b></button>
+              <button class="char" data-char="1"><span class="emoji">🐰</span><b>토끼</b></button>
+              <button class="char" data-char="2"><span class="emoji">🐱</span><b>고양이</b></button>
+            </div>
+            <button class="primary" id="mainBtn">모험 시작하기&nbsp; ✨</button>
+          </div>
+        </div>
+      </div>
+      <div class="tipline"><span>이동 <kbd class="key">←</kbd> <kbd class="key">→</kbd> · 사다리 <kbd class="key">↑</kbd> <kbd class="key">↓</kbd> · 점프 <kbd class="key">SPACE</kbd></span><span>열매를 모두 모으면 다음 스테이지!</span></div>
+      <div class="mobile-controls" aria-label="모바일 게임 조작"><button data-key="ArrowLeft" aria-label="왼쪽 이동">◀<br><small>왼쪽</small></button><button data-key="ArrowUp" aria-label="사다리 위로">▲<br><small>위</small></button><button data-key="Space" aria-label="점프">⬆<br><small>점프</small></button><button data-key="ArrowDown" aria-label="사다리 아래로">▼<br><small>아래</small></button><button data-key="ArrowRight" aria-label="오른쪽 이동">▶<br><small>오른쪽</small></button></div>
+    </section>
+    <aside class="side">
+      <section class="side-card"><div class="side-title">✦ 오늘의 미션</div>
+        <div class="mission"><div class="mission-icon">🍓</div><div><b>숲의 열매 수집</b><small id="missionBerry">열매를 모아보세요</small><div class="progress-track"><span id="berryProgress"></span></div></div></div>
+        <div class="mission"><div class="mission-icon">🛡️</div><div><b>무사히 살아남기</b><small>남은 생명을 지키세요</small></div><span class="pill" id="lifeMini">♥ 3</span></div>
+        <div class="mission"><div class="mission-icon">🏆</div><div><b>최고 기록</b><small>이번 브라우저 기록</small></div><span class="pill" id="best">0</span></div>
+      </section>
+      <section class="side-card"><div class="side-title">✧ 모험 가이드</div>
+        <div class="tipbox"><strong>TIP 01</strong><br>사다리 근처에서 <b>↑ / ↓</b>를 눌러 위아래로 이동해요.</div>
+        <div style="height:8px"></div><div class="tipbox"><strong>TIP 02</strong><br>점프 중에도 좌우로 움직일 수 있어요. 몬스터의 이동 방향을 잘 살펴보세요!</div>
+      </section>
+    </aside>
+  </main>
+  <div class="footer">FOREST QUEST · 작은 모험도 멋진 이야기로 남아요</div>
+</div>
+<script>
+(()=>{
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+const W=800,H=560;
+const $=id=>document.getElementById(id);
+let audio=null,sound=true,started=false,paused=false,raf=0,last=0,clock=0,score=0,lives=3,stage=1,character=0,keys={},jumpLatch=false,invuln=0,toastTimer=0;
+let totalRuns=Number(localStorage.getItem('forestQuestRuns')||0), coins=Number(localStorage.getItem('forestQuestCoins')||0), shieldReady=false;
+let owned=JSON.parse(localStorage.getItem('forestQuestItems')||'{}'), jumpCount=0;
+const shopItems=[
+ {id:'double',icon:'🪽',name:'2단 점프',desc:'공중에서 한 번 더 점프할 수 있어요.',cost:18,unlock:2},
+ {id:'speed',icon:'⚡',name:'스피드 부츠',desc:'이동 속도가 영구적으로 빨라져요.',cost:15,unlock:1},
+ {id:'heart',icon:'💖',name:'생명력 +1',desc:'매 판 시작할 때 생명이 1개 추가돼요.',cost:22,unlock:3},
+ {id:'magnet',icon:'🧲',name:'열매 자석',desc:'주변의 열매를 더 넓은 범위에서 끌어당겨요.',cost:20,unlock:4},
+ {id:'shield',icon:'🛡️',name:'보호막',desc:'매 판 시작 시 첫 충돌을 막아줘요.',cost:28,unlock:6},
+ {id:'jumppower',icon:'🚀',name:'슈퍼 점프',desc:'점프 높이가 영구적으로 강해져요.',cost:25,unlock:5}
+];
+let platforms=[],ladders=[],items=[],enemies=[],particles=[],decor=[];
+const player={x:38,y:478,w:29,h:32,vx:0,vy:0,speed:3.5,jump:-10.4,ground:false,ladder:false,dir:1,jumps:0};
+const names=['너구리','토끼','고양이'];
+function beep(f=440,d=.09,type='sine',end=null){if(!sound)return;try{audio ||= new (window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume();let o=audio.createOscillator(),g=audio.createGain();o.type=type;o.frequency.setValueAtTime(f,audio.currentTime);if(end)o.frequency.exponentialRampToValueAtTime(end,audio.currentTime+d);g.gain.setValueAtTime(.045,audio.currentTime);g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+d);o.connect(g);g.connect(audio.destination);o.start();o.stop(audio.currentTime+d)}catch(e){}}
+function sfx(kind){if(kind==='jump')beep(280,.14,'sine',590);if(kind==='berry'){beep(620,.08);setTimeout(()=>beep(900,.1),65)}if(kind==='hit')beep(130,.24,'sawtooth',55);if(kind==='clear'){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.18,'triangle'),i*90))}}
+function rnd(a,b){return a+Math.random()*(b-a)}
+function particlesAt(x,y,color,n=12){for(let i=0;i<n;i++)particles.push({x,y,vx:rnd(-2.8,2.8),vy:rnd(-3.4,1),life:rnd(18,34),max:34,r:rnd(2,4),color})}
+function makeStage(s){
+ platforms=[{x:0,y:520,w:800,h:18,color:'#4d9a7d'}];ladders=[];items=[];enemies=[];decor=[];
+ const ys=[425,330,235,140,65],cols=['#7cbd91','#72b9a8','#78b8c9','#8eabd0','#c1a6d9'];
+ const palette=[['#7cbd91','#72b9a8','#78b8c9','#8eabd0','#c1a6d9'],['#e2ad72','#d88c72','#b87586','#927cb8','#6b91c4'],['#8ac7c2','#75a7b8','#9bb9d7','#b5a5db','#e2c5ed']][Math.floor((s-1)/4)%3];
+ ys.forEach((y,i)=>{
+   // Fixed, reachable ledges; alternating gaps create a readable route.
+   let layout=(i+s)%3;
+   let ps=layout===0?[{x:35,w:315},{x:455,w:310}]:layout===1?[{x:30,w:230},{x:320,w:205},{x:575,w:190}]:[{x:30,w:175},{x:250,w:300},{x:600,w:165}];
+   ps.forEach((q,j)=>platforms.push({x:q.x,y,w:q.w,h:13,color:palette[i]}));
+   // ladder connects to the floor / platform immediately below
+   ps.forEach((q,j)=>{if((j+i)%2===0 || j===ps.length-1){let x=q.x+q.w*(j===ps.length-1?.72:.48);ladders.push({x,yTop:y+9,yBot:y+95})}});
+ });
+ // extra ladder anchors guarantee a route through the level
+ [120,400,675].forEach((x,i)=>ladders.push({x,yTop:ys[i]+8,yBot:ys[i]+98}));
+ platforms.slice(1).forEach((p,i)=>{
+   let count=Math.max(1,Math.floor(p.w/135));
+   for(let j=0;j<count;j++)items.push({x:p.x+30+(j+.5)*(p.w-60)/count,y:p.y-19,phase:rnd(0,6.28),got:false});
+ });
+ // Add a few berries to the ground, and distribute enemies only on wide ledges.
+ for(let i=0;i<3;i++)items.push({x:100+i*300,y:493,phase:rnd(0,6.28),got:false});
+ const ledges=platforms.slice(1).filter(p=>p.w>180);
+ let count=Math.min(11,2+Math.floor(s*.55));
+ for(let i=0;i<count;i++){let p=ledges[(i*3+s)%ledges.length];enemies.push({x:p.x+30+(i%3)*35,y:p.y-23,w:25,h:22,min:p.x+4,max:p.x+p.w-30,dir:i%2? -1:1,speed:1.05+s*.13+Math.random()*.25,phase:rnd(0,6)})}
+ for(let i=0;i<30;i++)decor.push({x:rnd(0,W),y:rnd(20,H-25),r:rnd(1,3),a:rnd(.15,.6),phase:rnd(0,6)});
+ player.x=35;player.y=482;player.vx=0;player.vy=0;player.ground=false;player.ladder=false;invuln=65;
+ updateHud();
+}
+function updateHud(){ $('score').textContent=String(score).padStart(5,'0');$('lives').textContent='♥ '.repeat(Math.max(0,lives)).trim()||'—';$('stage').textContent=String(stage).padStart(2,'0');let total=items.length,got=items.filter(i=>i.got).length;$('berries').innerHTML=got+'<small> / '+total+'</small>';$('berryProgress').style.width=(total?got/total*100:0)+'%';$('missionBerry').textContent=`${got} / ${total}개 수집`; $('lifeMini').textContent='♥ '+lives;$('stagefill').style.width=(stage/20*100)+'%';$('best').textContent=storage.get('forestQuestBest','0')||'0'}
+function pop(msg){let el=$('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),1600)}
+function showOverlay(title,text,button,showChars=false){$('modalTitle').textContent=title;$('modalText').textContent=text;$('mainBtn').textContent=button;$('characters').style.display=showChars?'flex':'none';$('overlay').classList.remove('hidden')}
+function hideOverlay(){$('overlay').classList.add('hidden')}
+function start(){if(!started){started=true;totalRuns++;storage.set('forestQuestRuns',totalRuns);score=0;lives=3+(owned.heart?1:0);shieldReady=!!owned.shield;stage=1;player.speed=owned.speed?4.5:3.5;player.jump=owned.jumppower?-12.2:-10.4;makeStage(stage);renderShop()}paused=false;hideOverlay();$('pauseBtn').innerHTML='Ⅱ <span class="label">일시정지</span>';last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(loop);beep(520,.08)}
+function pause(){if(!started)return;paused=!paused;if(paused){cancelAnimationFrame(raf);showOverlay('잠깐 쉬어가요','모험은 여기서 기다리고 있어요. 준비가 되면 계속 달려요!','계속하기',false);$('pauseBtn').innerHTML='▶ <span class="label">계속하기</span>'}else{hideOverlay();$('pauseBtn').innerHTML='Ⅱ <span class="label">일시정지</span>';last=performance.now();raf=requestAnimationFrame(loop)}}
+function reset(){cancelAnimationFrame(raf);started=false;paused=false;score=0;lives=3;stage=1;makeStage(stage);showOverlay('새로운 모험을 떠나요','캐릭터를 고르고 열매를 모아 숲의 모든 스테이지를 정복하세요!','모험 시작하기 ✨',true)}
+function collision(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y}
+function onLadder(){let cx=player.x+player.w/2;return ladders.find(l=>Math.abs(cx-l.x)<14&&player.y+player.h>l.yTop-4&&player.y<l.yBot+4)}
+function hurt(){if(invuln>0)return;if(shieldReady){shieldReady=false;invuln=80;particlesAt(player.x+14,player.y+16,'#8cf5c7',20);pop('보호막이 충격을 막았어요!');return}lives--;invuln=100;particlesAt(player.x+14,player.y+16,'#ff7e92',20);sfx('hit');player.x=35;player.y=482;player.vx=0;player.vy=0;updateHud();if(lives<=0){started=false;cancelAnimationFrame(raf);let best=Number(storage.get('forestQuestBest','0')||0);if(score>best){storage.set('forestQuestBest',score)}updateHud();showOverlay('다시 도전해 볼까요?','이번 점수는 '+score+'점이에요. 숨을 고르고 다시 숲으로 출발해요!','다시 도전하기',false)}}
+function nextStage(){sfx('clear');if(stage>=20){started=false;let best=Number(storage.get('forestQuestBest','0')||0);if(score>best)storage.set('forestQuestBest',score);updateHud();showOverlay('숲의 전설이 되었어요!','축하해요! 20개 스테이지를 모두 정복했어요. 최종 점수: '+score+'점','한 번 더 모험하기',false);return}stage++;makeStage(stage);pop('STAGE '+stage+' · 새로운 숲이 열렸어요!');updateHud()}
+function update(dt){
+ clock+=dt; if(invuln>0)invuln-=dt;
+ let left=keys.ArrowLeft||keys.KeyA,right=keys.ArrowRight||keys.KeyD,up=keys.ArrowUp||keys.KeyW,down=keys.ArrowDown||keys.KeyS,jump=keys.Space||keys.KeyWJump;
+ player.vx=0;if(left){player.vx=-player.speed;player.dir=-1}if(right){player.vx=player.speed;player.dir=1}
+ let ladder=onLadder();player.ladder=!!ladder&&(up||down||player.ladder);
+ if(ladder&&(up||down)){player.x+=(ladder.x-(player.x+player.w/2))*.18;player.vy=up?-2.6:2.6;player.ground=false}
+ else {player.vy+=.42*dt;if(player.vy>9)player.vy=9;if(jump&&!jumpLatch&&(player.ground||(owned.double&&player.jumps<2))){player.vy=player.jump;player.ground=false;player.jumps++;sfx('jump');particlesAt(player.x+14,player.y+30,'#b8ffe1',7)}player.ladder=false}
+ jumpLatch=!!jump;
+ let oldBottom=player.y+player.h;player.x+=player.vx*dt;player.y+=player.vy*dt;player.x=Math.max(0,Math.min(W-player.w,player.x));player.ground=false;
+ if(!player.ladder&&player.vy>=0){for(let p of platforms){if(player.x+player.w>p.x&&player.x<p.x+p.w&&oldBottom<=p.y+5&&player.y+player.h>=p.y){player.y=p.y-player.h;player.vy=0;player.ground=true;player.jumps=0}}}
+ if(player.y>H+20){hurt();return}
+ items.forEach(it=>{if(!it.got){let iy=it.y+Math.sin(clock*.07+it.phase)*4;if(Math.hypot(player.x+player.w/2-it.x,player.y+player.h/2-iy)<(owned.magnet?52:24)){it.got=true;score+=100*stage;coins++;storage.set('forestQuestCoins',coins);if(!$('shopOverlay').classList.contains('hidden'))renderShop();sfx('berry');particlesAt(it.x,iy,'#ff6c9d',12);updateHud()}}});
+ enemies.forEach(e=>{e.x+=e.dir*e.speed*dt;if(e.x<e.min){e.x=e.min;e.dir=1}if(e.x>e.max){e.x=e.max;e.dir=-1}e.phase+=.1*dt;if(invuln<=0&&collision(player,{x:e.x,y:e.y,w:e.w,h:e.h})){hurt()}});
+ for(let i=particles.length-1;i>=0;i--){let p=particles[i];p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=.08*dt;p.life-=dt;if(p.life<=0)particles.splice(i,1)}
+ if(items.length&&items.every(i=>i.got))nextStage();
+}
+function rounded(x,y,w,h,r,fill,stroke){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.stroke()}}
+function draw(){
+ let g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#182c56');g.addColorStop(.55,'#315c79');g.addColorStop(1,'#6b8e83');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+ // distant moon/sun and layered hills
+ ctx.fillStyle='#ffe6a1';ctx.globalAlpha=.85;ctx.beginPath();ctx.arc(675,75,29,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
+ for(let layer=0;layer<3;layer++){ctx.beginPath();ctx.moveTo(0,H);for(let x=0;x<=W;x+=20)ctx.lineTo(x,360+layer*43+Math.sin(x*.009+layer*1.7+clock*.001)*27+Math.sin(x*.021+layer)*9);ctx.lineTo(W,H);ctx.closePath();ctx.fillStyle=['#315e6c','#2a6d6c','#285d5c'][layer];ctx.globalAlpha=.42+layer*.12;ctx.fill();ctx.globalAlpha=1}
+ // floating fireflies
+ decor.forEach(d=>{ctx.globalAlpha=d.a*(.65+.35*Math.sin(clock*.05+d.phase));ctx.fillStyle='#c7ffe5';ctx.beginPath();ctx.arc(d.x,d.y,d.r,0,Math.PI*2);ctx.fill()});ctx.globalAlpha=1;
+ // vines and platforms
+ ladders.forEach(l=>{ctx.lineCap='round';ctx.strokeStyle='#d2c6a0';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(l.x-6,l.yTop);ctx.lineTo(l.x-6,l.yBot);ctx.moveTo(l.x+6,l.yTop);ctx.lineTo(l.x+6,l.yBot);ctx.stroke();ctx.strokeStyle='#f1e3bc';ctx.lineWidth=3;for(let y=l.yTop+7;y<l.yBot;y+=17){ctx.beginPath();ctx.moveTo(l.x-7,y);ctx.lineTo(l.x+7,y);ctx.stroke()}})
+ platforms.forEach((p,i)=>{ctx.shadowColor='#07182766';ctx.shadowBlur=12;rounded(p.x,p.y,p.w,p.h,6,p.color);ctx.shadowBlur=0;rounded(p.x,p.y,p.w,4,4,'#d6f5d6aa');for(let x=p.x+14;x<p.x+p.w-8;x+=36){ctx.fillStyle='#ffffff1c';ctx.beginPath();ctx.ellipse(x,p.y+8,4,1.5,0,0,Math.PI*2);ctx.fill()}});
+ // berries
+ items.forEach(it=>{if(it.got)return;let y=it.y+Math.sin(clock*.07+it.phase)*4;ctx.save();ctx.translate(it.x,y);ctx.shadowColor='#ff8fb5';ctx.shadowBlur=13;ctx.fillStyle='#ff5e91';ctx.beginPath();ctx.moveTo(0,-7);ctx.bezierCurveTo(-13,-12,-13,2,0,10);ctx.bezierCurveTo(13,2,13,-12,0,-7);ctx.fill();ctx.shadowBlur=0;ctx.fillStyle='#8cf5a6';ctx.beginPath();ctx.ellipse(-3,-9,5,2,-.5,0,Math.PI*2);ctx.ellipse(3,-9,5,2,.5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffffffb8';ctx.beginPath();ctx.arc(-4,-2,2,0,Math.PI*2);ctx.fill();ctx.restore()});
+ // enemies: little forest slimes
+ enemies.forEach(e=>{ctx.save();ctx.translate(e.x,e.y+Math.sin(e.phase)*1.5);ctx.shadowColor='#ff7890';ctx.shadowBlur=10;rounded(0,4,e.w,e.h-4,9,'#f17891');ctx.shadowBlur=0;ctx.fillStyle='#a83e6b';ctx.beginPath();ctx.moveTo(3,6);ctx.lineTo(6,0);ctx.lineTo(10,6);ctx.moveTo(15,6);ctx.lineTo(19,0);ctx.lineTo(22,6);ctx.fill();ctx.fillStyle='#fff';ctx.fillRect(e.dir>0?14:5,10,5,5);ctx.fillStyle='#272744';ctx.fillRect(e.dir>0?16:6,11,2,4);ctx.restore()});
+ // player, blink while invulnerable
+ if(!(invuln>0&&Math.floor(invuln/7)%2===0)){
+ let x=player.x,y=player.y;ctx.save();ctx.translate(x+player.w/2,y+player.h/2);ctx.scale(player.dir,1);ctx.translate(-player.w/2,-player.h/2);
+ ctx.shadowColor='#07182766';ctx.shadowBlur=8;ctx.fillStyle=character===0?'#c98b62':character===1?'#f5f1e9':'#f2c66d';rounded(1,9,27,23,10,ctx.fillStyle);ctx.shadowBlur=0;
+ if(character===0){ctx.fillStyle='#a86b48';ctx.beginPath();ctx.moveTo(3,13);ctx.lineTo(5,1);ctx.lineTo(12,10);ctx.moveTo(17,10);ctx.lineTo(24,1);ctx.lineTo(26,13);ctx.fill();ctx.fillStyle='#49364c';rounded(4,17,19,8,4,'#49364c')}
+ if(character===1){ctx.fillStyle='#f5f1e9';ctx.beginPath();ctx.ellipse(8,6,4,10,-.15,0,Math.PI*2);ctx.ellipse(20,6,4,10,.15,0,Math.PI*2);ctx.fill();ctx.fillStyle='#f4a5b9';ctx.beginPath();ctx.ellipse(8,6,1.8,6,0,0,Math.PI*2);ctx.ellipse(20,6,1.8,6,0,0,Math.PI*2);ctx.fill()}
+ if(character===2){ctx.fillStyle='#e4aa45';ctx.beginPath();ctx.moveTo(2,14);ctx.lineTo(3,1);ctx.lineTo(12,10);ctx.moveTo(16,10);ctx.lineTo(25,1);ctx.lineTo(27,14);ctx.fill()}
+ ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(10,17,4,0,Math.PI*2);ctx.arc(21,17,4,0,Math.PI*2);ctx.fill();ctx.fillStyle='#26344d';ctx.beginPath();ctx.arc(11,17,2,0,Math.PI*2);ctx.arc(22,17,2,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ff9aa7';ctx.beginPath();ctx.arc(15.5,22,2,0,Math.PI*2);ctx.fill();ctx.restore();
+ }
+ particles.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life/p.max);ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill()});ctx.globalAlpha=1;
+ // subtle vignette
+ let vg=ctx.createRadialGradient(W/2,H/2,180,W/2,H/2,510);vg.addColorStop(0,'transparent');vg.addColorStop(1,'#050b1b55');ctx.fillStyle=vg;ctx.fillRect(0,0,W,H);
+}
+function loop(now){if(!started||paused)return;let dt=Math.min(1.8,(now-last)/16.67||1);last=now;update(dt);draw();if(started&&!paused)raf=requestAnimationFrame(loop)}
+function renderShop(){
+ $('shopMeta').textContent=`누적 플레이 ${totalRuns}판 · 보유 열매 코인 ${coins}개`;
+ $('shopGrid').innerHTML='';
+ shopItems.forEach(item=>{
+  const unlocked=totalRuns>=item.unlock, bought=!!owned[item.id];
+  const card=document.createElement('div');card.className='shop-item';
+  const btn=document.createElement('button');btn.textContent=bought?'구매 완료 ✓':(!unlocked?`플레이 ${item.unlock}판에 해금`:`구매 · ${item.cost} 코인`);btn.disabled=bought||!unlocked||coins<item.cost;
+  btn.addEventListener('click',()=>{if(bought||!unlocked||coins<item.cost)return;coins-=item.cost;owned[item.id]=true;storage.set('forestQuestCoins',coins);storage.set('forestQuestItems',JSON.stringify(owned));renderShop();pop(item.name+' 구매 완료!');beep(720,.1,'triangle')});
+  card.innerHTML=`<div class="shop-icon">${item.icon}</div><b>${item.name}</b><p>${item.desc}<br><span style="color:#ffd879">해금: ${item.unlock}판 · ${item.cost} 코인</span></p>`;
+  card.appendChild(btn);$('shopGrid').appendChild(card);
+ });
+}
+function openShop(){paused=started; if(started)cancelAnimationFrame(raf);$('shopOverlay').classList.remove('hidden');renderShop()}
+function closeShop(){ $('shopOverlay').classList.add('hidden');if(started&&paused){paused=false;last=performance.now();raf=requestAnimationFrame(loop)}}
+$('shopBtn').addEventListener('click',openShop);$('closeShop').addEventListener('click',closeShop);
+window.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space'].includes(e.code)){e.preventDefault();}keys[e.code]=true;if(e.code==='Escape')pause();if(e.code==='KeyP')pause()});
+window.addEventListener('keyup',e=>{keys[e.code]=false});
+document.querySelectorAll('.char').forEach(b=>b.addEventListener('click',()=>{character=Number(b.dataset.char);document.querySelectorAll('.char').forEach(c=>c.classList.toggle('selected',c===b));beep(450+character*100,.08)}));
+$('mainBtn').addEventListener('click',()=>{if(!started){if(lives<=0)reset();start()}else if(paused){paused=false;hideOverlay();last=performance.now();raf=requestAnimationFrame(loop)}else start()});
+$('pauseBtn').addEventListener('click',pause);$('restartBtn').addEventListener('click',reset);
+$('soundBtn').addEventListener('click',()=>{sound=!sound;$('soundBtn').innerHTML=(sound?'🔊':'🔇')+' <span class="label">소리</span>';if(sound)beep(650,.08)});
+document.querySelectorAll('[data-key]').forEach(b=>{const k=b.dataset.key;const down=e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(_){}keys[k]=true};const up=e=>{e.preventDefault();keys[k]=false};b.addEventListener('pointerdown',down);b.addEventListener('pointerup',up);b.addEventListener('pointerleave',up);b.addEventListener('pointercancel',up);b.addEventListener('lostpointercapture',up)});window.addEventListener('blur',()=>{keys={};jumpLatch=false});document.addEventListener('visibilitychange',()=>{if(document.hidden){keys={};jumpLatch=false}});
+makeStage(1);renderShop();draw();
+})();
+</script>
+</body></html>
