@@ -25,6 +25,16 @@
  #home .note{margin:10px 0 14px}footer{padding:13px 0}
 }
 .visit-counter{display:flex;justify-content:center;align-items:center;gap:8px;margin:0 0 22px;min-height:20px;font-size:11px;color:var(--muted)}.visit-counter a{display:inline-flex;align-items:center;min-height:28px}.visit-counter img{height:20px;max-width:100%}@media(max-width:700px){.visit-counter{margin-bottom:12px;font-size:10px}}
+.swipe-hint{display:none}
+@media(max-width:700px){
+ #game-list{display:flex;gap:14px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scroll-padding-inline:2px;padding:4px 2px 14px;align-items:stretch;-webkit-overflow-scrolling:touch}
+ #game-list .game{flex:0 0 86%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always}
+ #game-list .game:hover{transform:none}
+ #game-list .info{display:flex;flex-direction:column;height:calc(100% - 155px)}
+ #game-list .play{margin-top:auto}
+ #game-list .empty{flex:0 0 100%;margin:0}
+ .swipe-hint{display:block;margin:-10px 0 14px;color:var(--muted);font-size:12px;text-align:right}
+}
 </style>
 </head>
 <body><div class="shell">
@@ -36,7 +46,7 @@
 <section id="education" class="section" hidden><button class="back" data-page="home">← 홈으로</button><div class="section-head"><div><p class="eyebrow">LEARNING · 1 CONTENT</p><h1>배움이 자라는 공간</h1><p class="section-intro">동화를 듣고, 생각하며 새로운 배움을 만나보세요.</p></div></div><div class="grid">
 <article class="learning-card"><div class="art forest" aria-hidden="true">📖🌱</div><div class="info"><div class="meta"><span>LEARNING 01</span><span>7~9살 · 읽기와 이해</span></div><h2>동화 정원</h2><p>작은 씨앗이 꽃이 되기까지.<br>동화를 듣고, 쉬운 질문의 답을 골라 봐요.</p><a class="play" style="background:#37846a" href="https://guras1984.github.io/story-garden/" target="_blank" rel="noopener noreferrer">동화 읽기 시작 <span>↗</span></a></div></article>
 </div></section>
-<section id="games" class="section" hidden><button class="back" data-page="home">← 홈으로</button><div class="section-head"><div><p class="eyebrow">PLAYGROUND · 8 GAMES</p><h1>오늘의 즐거움을 골라보세요.</h1><p class="section-intro">나만의 작은 아케이드, 여덟 가지 즐거움.</p></div><input class="search" id="search" type="search" placeholder="게임 찾기..." aria-label="게임 찾기"></div><div class="grid" id="game-list">
+<section id="games" class="section" hidden><button class="back" data-page="home">← 홈으로</button><div class="section-head"><div><p class="eyebrow">PLAYGROUND · 8 GAMES</p><h1>오늘의 즐거움을 골라보세요.</h1><p class="section-intro">나만의 작은 아케이드, 여덟 가지 즐거움.</p></div><input class="search" id="search" type="search" placeholder="게임 찾기..." aria-label="게임 찾기"></div><p class="swipe-hint">← 좌우로 넘겨 게임을 골라보세요 →</p><div class="grid" id="game-list" role="region" aria-label="게임 목록, 모바일에서는 좌우로 넘겨 선택">
 <article class="game" data-search="forest game 포레스트 숲 모험"><div class="art forest" aria-hidden="true">🌲🦊</div><div class="info"><div class="meta"><span>GAME 01</span><span>🌿 모험</span></div><h2>Forest Game</h2><p>숲속 모험을 시작해 보세요!</p><a class="play" href="https://guras1984.github.io/forest-game/" target="_blank" rel="noopener noreferrer">게임 시작 <span>↗</span></a></div></article>
 <article class="game" data-search="new1984 뉴 게임 도전"><div class="art space" aria-hidden="true">🚀</div><div class="info"><div class="meta"><span>GAME 02</span><span>🚀 도전</span></div><h2>New1984</h2><p>새로운 게임에 도전해 보세요!</p><a class="play" href="https://guras1984.github.io/new1984/" target="_blank" rel="noopener noreferrer">게임 시작 <span>↗</span></a></div></article>
 <article class="game" data-search="matchgame match game 매치 매칭 기억력 그림"><div class="art match" aria-hidden="true">🌈⭐</div><div class="info"><div class="meta"><span>GAME 03</span><span>🧠 기억력</span></div><h2>Match Game</h2><p>같은 그림을 찾아보세요!</p><a class="play" href="https://guras1984.github.io/matchgame/" target="_blank" rel="noopener noreferrer">게임 시작 <span>↗</span></a></div></article>
@@ -52,5 +62,5 @@ document.getElementById('visit-badge').addEventListener('error',function(){this.
 const pages=['home','education','games'];
 function showPage(){const page=pages.includes(location.hash.slice(1))?location.hash.slice(1):'home';pages.forEach(id=>document.getElementById(id).hidden=id!==page);document.querySelectorAll('nav button').forEach(b=>{if(b.dataset.page===page)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});document.title=({home:'My World · 배움과 놀이',education:'교육 · My World',games:'게임 · My World'})[page];window.scrollTo(0,0)}
 document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>{location.hash=b.dataset.page}));window.addEventListener('hashchange',showPage);showPage();
-document.getElementById('search').addEventListener('input',e=>{const query=e.target.value.trim().toLocaleLowerCase('ko');let count=0;document.querySelectorAll('.game').forEach(card=>{card.hidden=!(card.dataset.search+' '+card.innerText).toLocaleLowerCase('ko').includes(query);if(!card.hidden)count++});document.getElementById('empty').hidden=count!==0});
+document.getElementById('search').addEventListener('input',e=>{document.getElementById('game-list').scrollLeft=0;const query=e.target.value.trim().toLocaleLowerCase('ko');let count=0;document.querySelectorAll('.game').forEach(card=>{card.hidden=!(card.dataset.search+' '+card.innerText).toLocaleLowerCase('ko').includes(query);if(!card.hidden)count++});document.getElementById('empty').hidden=count!==0});
 </script></body></html>
