@@ -35,6 +35,66 @@
  #game-list .empty{flex:0 0 100%;margin:0}
  .swipe-hint{display:block;margin:-10px 0 14px;color:var(--muted);font-size:12px;text-align:right}
 }
+
+/* Fit portal screens to the phone's visible viewport; game destinations stay untouched. */
+@media(max-width:700px),(max-height:500px) and (max-width:1000px){
+ .shell{min-height:100svh;display:flex;flex-direction:column;padding-inline:max(14px,env(safe-area-inset-left));padding-bottom:env(safe-area-inset-bottom)}
+ header{height:54px;flex-shrink:0;gap:8px}.brand{font-size:17px}.brand-icon{width:30px;height:30px}
+ nav button{min-height:44px;padding:8px 10px;font-size:12px}
+ main{flex:1;min-width:0;display:flex;flex-direction:column}
+ main>section:not([hidden]){flex:1;min-width:0}
+ footer{flex-shrink:0;padding:10px 0;font-size:9px}
+ .section{padding:12px 0 10px;display:flex;flex-direction:column}
+ .back{margin-bottom:10px;align-self:flex-start;min-height:28px}
+ .section h1{font-size:clamp(21px,5.5vw,28px);line-height:1.35;margin:0}
+ .section-head{gap:10px;margin-bottom:10px;align-items:stretch;flex-direction:column}
+ .section .eyebrow{font-size:10px;margin-bottom:7px;letter-spacing:1.5px}
+ .section-intro{font-size:12px;line-height:1.5;margin:7px 0 0}
+ .search{width:100%;padding:9px 12px;font-size:16px}
+ .swipe-hint{display:block;font-size:11px;margin:0 0 7px}
+ #game-list,#education>.grid{display:flex;gap:12px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;padding:2px 2px 8px;min-width:0;align-items:stretch}
+ #game-list .game,#education .learning-card{flex:0 0 88%;min-width:0;scroll-snap-align:start}
+ .art{height:clamp(68px,calc(100svh - 450px),155px);font-size:clamp(35px,7svh,60px);flex-shrink:0}
+ #game-list .info,.info{height:auto;padding:14px;display:flex;flex-direction:column}
+ .info h2{font-size:19px;margin:10px 0 6px}.info p{font-size:12px;line-height:1.5;margin:0 0 12px}
+ .play{min-height:42px;align-items:center;padding:10px 12px}
+ #education>.grid{margin-top:14px}
+ #home .hero{padding:clamp(12px,3svh,24px) 0 16px}
+ #home .eyebrow{margin-bottom:9px}
+ #home .hero h1{font-size:clamp(25px,4.3svh,32px)}
+ #home .hero p.sub{margin-top:9px;font-size:12px}
+ #home .choices{grid-template-columns:1fr 1fr;gap:10px;margin:0}
+ #home .choice{padding:13px 12px}
+ #home .illustration{height:clamp(42px,10svh,75px);font-size:38px}
+ #home .choice h2{font-size:22px}
+ #home .choice p{font-size:11px;line-height:1.6}
+ #home .choice-bottom{margin-top:12px;font-size:11px}
+ #home .note{margin:12px 0 8px;font-size:10px}
+ .visit-counter{margin-bottom:8px;min-height:20px}
+}
+@media(max-height:600px) and (max-width:700px){
+ .section-intro,#home .hero .sub,#home .note{display:none}
+ #home .hero{padding:10px 0}
+ #home .hero h1{font-size:25px;line-height:1.25}
+ #home .illustration{height:38px;font-size:30px}
+ #home .choice p{display:none}
+ .section-head{gap:7px}.back{margin-bottom:4px}
+}
+@media(max-height:500px) and (max-width:1000px) and (orientation:landscape){
+ header{height:48px}footer{padding:6px 0}
+ #home .hero{padding:7px 0}#home .hero h1{font-size:23px;line-height:1.2}#home .hero h1 br{display:none}
+ #home .hero .sub,#home .eyebrow,#home .note,#home .choice p,.section-intro{display:none}
+ #home .illustration{height:28px;font-size:28px}#home .choice{padding:9px 14px}#home .choice h2{font-size:20px;margin:0}
+ #home .choice-bottom{margin-top:4px}#home .visit-counter{margin:4px 0}
+ .section{padding-top:5px}.back{margin:0;min-height:24px}
+ .section-head{flex-direction:row;align-items:center;margin-bottom:5px;gap:10px}
+ .section h1{font-size:20px}.section .eyebrow{margin-bottom:3px;font-size:9px}.search{max-width:210px}
+ .swipe-hint{margin:0 0 3px;font-size:10px}
+ #game-list .game,#education .learning-card{flex-basis:44%;display:flex}
+ .art{height:auto;width:30%;font-size:30px}
+ #game-list .info,.info{width:70%;padding:10px}
+ .info h2{font-size:16px;margin:6px 0}.info p{font-size:11px;margin-bottom:7px}.play{min-height:36px}
+}
 </style>
 </head>
 <body><div class="shell">
