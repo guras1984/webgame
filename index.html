@@ -113,7 +113,7 @@
  #game-list .info,.info{width:70%;padding:10px}
  .info h2{font-size:16px;margin:6px 0}.info p{font-size:11px;margin-bottom:7px}.play{min-height:36px}
 }
-</style>
+.catalog-update-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 16px}.catalog-update-bar button{font:inherit;font-size:12px;min-height:44px;padding:8px 14px;background:white;color:var(--purple);border:1px solid var(--line);border-radius:10px}.catalog-update-bar span{font-size:12px;color:var(--muted)}</style>
 </head>
 <body><div class="shell">
 <header><button class="brand" data-page="home" aria-label="My World 홈"><span class="brand-icon" aria-hidden="true">✦</span>My World</button><nav aria-label="주 메뉴"><button data-page="home" aria-current="page">홈</button><button data-page="education">교육</button><button data-page="games">게임</button></nav></header>
@@ -124,7 +124,7 @@
 <section id="education" class="section" hidden><button class="back" data-page="home">← 홈으로</button><div class="section-head"><div><p class="eyebrow">LEARNING · 1 CONTENT</p><h1>배움이 자라는 공간</h1><p class="section-intro">동화를 듣고, 생각하며 새로운 배움을 만나보세요.</p></div></div><div class="grid">
 <article class="learning-card"><div class="art forest" aria-hidden="true">📖🌱</div><div class="info"><div class="meta"><span>LEARNING 01</span><span>7~9살 · 읽기와 이해</span></div><h2>동화 정원</h2><p>작은 씨앗이 꽃이 되기까지.<br>동화를 듣고, 쉬운 질문의 답을 골라 봐요.</p><a class="play" style="background:#37846a" href="https://story-garden-family.story-garden-private.workers.dev/" target="_blank" rel="noopener noreferrer">동화 읽기 시작 <span>↗</span></a></div></article>
 </div></section>
-<section id="games" class="section" hidden><button class="back" data-page="home">← 홈으로</button><div class="section-head"><div><p class="eyebrow">PLAYGROUND · 10 GAMES</p><h1>오늘의 즐거움을 골라보세요.</h1><p class="section-intro">나만의 작은 아케이드, 열 가지 즐거움.</p></div><input class="search" id="search" type="search" placeholder="게임 찾기..." aria-label="게임 찾기"></div><p class="swipe-hint">← 좌우로 넘겨 게임을 골라보세요 →</p><div class="grid" id="game-list" role="region" aria-label="게임 목록, 모바일에서는 좌우로 넘겨 선택">
+<section id="games" class="section" hidden><button class="back" data-page="home">← 홈으로</button><div class="section-head"><div><p class="eyebrow">PLAYGROUND · 10 GAMES</p><h1>오늘의 즐거움을 골라보세요.</h1><p class="section-intro">나만의 작은 아케이드, 열 가지 즐거움.</p></div><input class="search" id="search" type="search" placeholder="게임 찾기..." aria-label="게임 찾기"></div><div class="catalog-update-bar"><button type="button" id="catalog-update">↻ 목록 업데이트</button><span id="catalog-update-status" role="status" aria-live="polite"></span></div><p class="swipe-hint">← 좌우로 넘겨 게임을 골라보세요 →</p><div class="grid" id="game-list" role="region" aria-label="게임 목록, 모바일에서는 좌우로 넘겨 선택">
 <article class="game" data-search="forest game 포레스트 숲 모험"><div class="art forest" aria-hidden="true">🌲🦊</div><div class="info"><div class="meta"><span>GAME 01</span><span>🌿 모험</span></div><h2>Forest Game</h2><p>숲속 모험을 시작해 보세요!</p><a class="play" href="https://guras1984.github.io/forest-game/" target="_blank" rel="noopener noreferrer">게임 시작 <span>↗</span></a></div></article>
 <article class="game" data-search="new1984 뉴 게임 도전"><div class="art space" aria-hidden="true">🚀</div><div class="info"><div class="meta"><span>GAME 02</span><span>🚀 도전</span></div><h2>New1984</h2><p>새로운 게임에 도전해 보세요!</p><a class="play" href="https://guras1984.github.io/new1984/" target="_blank" rel="noopener noreferrer">게임 시작 <span>↗</span></a></div></article>
 <article class="game" data-search="matchgame match game 매치 매칭 기억력 그림"><div class="art match" aria-hidden="true">🌈⭐</div><div class="info"><div class="meta"><span>GAME 03</span><span>🧠 기억력</span></div><h2>Match Game</h2><p>같은 그림을 찾아보세요!</p><a class="play" href="https://guras1984.github.io/matchgame/" target="_blank" rel="noopener noreferrer">게임 시작 <span>↗</span></a></div></article>
@@ -143,4 +143,33 @@ const pages=['home','education','games'];
 function showPage(){const page=pages.includes(location.hash.slice(1))?location.hash.slice(1):'home';pages.forEach(id=>document.getElementById(id).hidden=id!==page);document.querySelectorAll('nav button').forEach(b=>{if(b.dataset.page===page)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});document.title=({home:'My World · 배움과 놀이',education:'교육 · My World',games:'게임 · My World'})[page];window.scrollTo(0,0)}
 document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>{location.hash=b.dataset.page}));window.addEventListener('hashchange',showPage);showPage();
 document.getElementById('search').addEventListener('input',e=>{document.getElementById('game-list').scrollLeft=0;const query=e.target.value.trim().toLocaleLowerCase('ko');let count=0;document.querySelectorAll('.game').forEach(card=>{card.hidden=!(card.dataset.search+' '+card.innerText).toLocaleLowerCase('ko').includes(query);if(!card.hidden)count++});document.getElementById('empty').hidden=count!==0});
+
+(()=>{
+ const button=document.getElementById('catalog-update'),notice=document.getElementById('catalog-update-status');
+ let checking=false,lastChecked=0;
+ const signature=doc=>JSON.stringify([...doc.querySelectorAll('#game-list .game,.learning-card')].map(card=>[card.querySelector('h2')?.textContent.trim(),card.querySelector('a.play')?.getAttribute('href'),card.querySelector('.info p')?.textContent.trim()]));
+ const initial=signature(document);
+ async function checkCatalog(manual=false){
+  if(checking||(!manual&&Date.now()-lastChecked<60000))return;
+  checking=true;button.disabled=true;if(manual)notice.textContent='최신 목록을 확인하고 있어요…';
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),10000);
+  try{
+   const url=new URL(location.href);url.hash='';url.searchParams.set('_catalog',String(Date.now()));
+   const response=await fetch(url,{cache:'no-store',signal:controller.signal});if(!response.ok)throw Error('network');
+   const doc=new DOMParser().parseFromString(await response.text(),'text/html');
+   if(!doc.querySelector('#game-list .game'))throw Error('invalid');
+   lastChecked=Date.now();
+   if(signature(doc)!==initial){notice.textContent='새 목록으로 업데이트하고 있어요…';url.hash=location.hash;location.replace(url.href);return;}
+   if(manual)notice.textContent='최신 목록입니다.';
+  }catch{if(manual)notice.textContent='연결을 확인한 뒤 다시 눌러 주세요.';}
+  finally{clearTimeout(timer);checking=false;button.disabled=false;}
+ }
+ button.addEventListener('click',()=>checkCatalog(true));
+ window.addEventListener('pageshow',()=>checkCatalog());
+ document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkCatalog();});
+ setInterval(()=>{if(document.visibilityState==='visible')checkCatalog();},60000);
+ // Keep the home-screen URL tidy after a successful cache-bypassing refresh.
+ const clean=new URL(location.href);if(clean.searchParams.has('_catalog')){clean.searchParams.delete('_catalog');history.replaceState(null,'',clean.pathname+clean.search+clean.hash);}
+ checkCatalog();
+})();
 </script></body></html>
