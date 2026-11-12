@@ -4,7 +4,7 @@ Windows Server 업데이트를 조회하고 선택한 파일을 Microsoft에서 
 
 ## 실행
 
-- Windows 10/11 x64는 `KJ-Patch-Downloader-Setup.exe` 설치 프로그램을 사용합니다. Python 설치는 필요 없습니다. 설치 중 바탕화면 바로가기가 기본 선택되며 시작 메뉴 바로가기도 추가됩니다.
+- Windows 10/11 x64는 `KJ-Patch-Downloader-Setup.exe` 설치 프로그램을 사용합니다. Python 설치는 필요 없습니다. 설치 중 바탕화면 바로가기가 기본 선택되며 시작 메뉴 바로가기도 추가됩니다. 제거는 Windows 설정의 설치된 앱에서 할 수 있습니다.
 - macOS Apple Silicon은 ZIP을 풀고 `KJ Patch Downloader.app`을 실행합니다. 최소 macOS 13을 대상으로 제작했습니다.
 - Windows와 macOS 모두 앱 자체 창을 사용합니다. 별도 브라우저 창이나 localhost 주소가 뜨지 않습니다. 파일은 실행한 컴퓨터의 지정 폴더에 저장됩니다.
 - 소스 실행은 Windows, macOS, Linux에서 Python 3.9 이상으로 `python app.py`를 실행합니다. GUI 앱 빌드에는 `PySide6`와 `certifi`가 필요합니다.
