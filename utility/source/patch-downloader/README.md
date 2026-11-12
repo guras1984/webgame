@@ -41,7 +41,7 @@ Microsoft에서 제공한 SHA-256 또는 SHA-1 검증값과 대조한 뒤 완성
 
 실제 서버 조회 및 작은 Microsoft 파일 다운로드 검사는 `python tests/live_check.py 임시저장폴더`로 실행합니다. 이 검사는 2026-11-12에 확인한 KB 사례를 사용합니다.
 
-2026-11-12 기준 macOS에서 네 서버 버전 조회, Server 2025 체크포인트 식별, 공식 CAB 다운로드·해시 검증·기존 파일 건너뛰기를 확인했습니다. Windows 설치 파일은 Windows GitHub Actions에서 빌드하며 실제 Windows 데스크톱 실행 확인은 별도로 필요합니다. macOS 앱은 로컬 서명이며 Developer ID 공증이 포함되지 않습니다.
+2026-11-12 기준 macOS에서 네 서버 버전 조회, Server 2025 체크포인트 식별, 공식 CAB 다운로드·해시 검증·기존 파일 건너뛰기를 확인했습니다. Windows 설치 파일은 Windows GitHub Actions에서 빌드하며 실제 Windows 데스크톱 실행 확인은 별도로 필요합니다. macOS 앱은 Developer ID 서명 및 공증이 포함되지 않아 처음 실행 시 보안 경고가 표시될 수 있습니다.
 
 ## 공식 자료
 
