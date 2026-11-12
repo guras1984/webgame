@@ -56,9 +56,8 @@ jobs:
           src='utility/source/patch-downloader'
           python3 -m PyInstaller --noconfirm --clean --windowed --onedir \
             --name 'KJ Patch Downloader' --icon "$src/assets/KJ-TOOL.icns" \
-            --add-data "$src/assets:assets" --collect-all PySide6 --collect-all certifi \
+            --add-data "$src/assets:assets" --collect-all certifi \
             "$src/qt_app.py"
-          codesign --force --deep --sign - 'dist/KJ Patch Downloader.app'
           ditto -c -k --sequesterRsrc --keepParent 'dist/KJ Patch Downloader.app' \
             'dist/KJ-Patch-Downloader-Mac-AppleSilicon.zip'
       - uses: actions/upload-artifact@v4
@@ -84,4 +83,4 @@ jobs:
             dist/KJ-Patch-Downloader-Mac-AppleSilicon.zip \
             --repo "$GITHUB_REPOSITORY" \
             --title 'KJ Patch Downloader · 앱 창 개선판' \
-            --notes 'Windows는 설치형으로 제공되며 설치 마법사에서 바탕화면 바로가기가 기본 선택됩니다. 시작 메뉴 바로가기도 함께 추가됩니다. Windows/macOS 모두 브라우저 대신 앱 자체 창으로 실행됩니다. macOS 앱은 로컬 서명본이며 Apple Developer ID 공증은 포함되지 않아 처음 실행 시 보안 경고가 표시될 수 있습니다.'
+            --notes 'Windows는 설치형으로 제공되며 설치 마법사에서 바탕화면 바로가기가 기본 선택됩니다. 시작 메뉴 바로가기도 함께 추가됩니다. Windows/macOS 모두 브라우저 대신 앱 자체 창으로 실행됩니다. macOS 앱은 Apple Developer ID 서명 및 공증이 포함되지 않아 처음 실행 시 보안 경고가 표시될 수 있습니다.'
