@@ -1,13 +1,13 @@
-# KJ Patch Downloader 1.0
+# KJ Patch Downloader 1.1.0
 
 Windows Server 업데이트를 조회하고 선택한 파일을 Microsoft에서 일괄 다운로드하는 로컬 프로그램입니다.
 
 ## 실행
 
-- Windows 10/11 x64 포터블은 ZIP 전체를 푼 뒤 `KJ Patch Downloader.exe`를 실행합니다. Python 설치가 필요 없습니다.
-- macOS Apple Silicon 포터블은 ZIP을 풀고 `KJ Patch Downloader.app`을 실행합니다. 최소 macOS 13을 대상으로 제작했습니다. 다운로더 화면은 앱 창 안에 바로 표시되어 별도 브라우저를 열지 않습니다.
-- 소스 실행은 Windows, macOS, Linux에서 Python 3.9 이상으로 `python app.py`를 실행합니다. macOS에서 인증서 오류가 발생하면 `python3 -m pip install certifi` 후 다시 실행합니다.
-- Windows/Linux에서는 화면이 기본 웹 브라우저에서 열립니다. macOS에서는 앱 창 안에 표시됩니다. 패치 파일은 실행한 컴퓨터의 지정 폴더에 저장되며 화면의 **앱 종료**로 백그라운드 프로세스를 종료합니다.
+- Windows 10/11 x64는 `KJ-Patch-Downloader-Setup.exe` 설치 프로그램을 사용합니다. Python 설치는 필요 없습니다. 설치 중 바탕화면 바로가기가 기본 선택되며 시작 메뉴 바로가기도 추가됩니다.
+- macOS Apple Silicon은 ZIP을 풀고 `KJ Patch Downloader.app`을 실행합니다. 최소 macOS 13을 대상으로 제작했습니다.
+- Windows와 macOS 모두 앱 자체 창을 사용합니다. 별도 브라우저 창이나 localhost 주소가 뜨지 않습니다. 파일은 실행한 컴퓨터의 지정 폴더에 저장됩니다.
+- 소스 실행은 Windows, macOS, Linux에서 Python 3.9 이상으로 `python app.py`를 실행합니다. GUI 앱 빌드에는 `PySide6`와 `certifi`가 필요합니다.
 
 ## 사용 순서
 
@@ -41,7 +41,7 @@ Microsoft에서 제공한 SHA-256 또는 SHA-1 검증값과 대조한 뒤 완성
 
 실제 서버 조회 및 작은 Microsoft 파일 다운로드 검사는 `python tests/live_check.py 임시저장폴더`로 실행합니다. 이 검사는 2026-11-12에 확인한 KB 사례를 사용합니다.
 
-2026-11-12에 macOS에서 네 서버 버전 조회, Server 2025 체크포인트 식별, 공식 CAB 다운로드·해시 검증·기존 파일 건너뛰기를 확인했습니다. Windows 실행 파일은 교차 컴파일했으며 실제 Windows 데스크톱 실행 확인이 필요합니다. macOS 앱은 로컬 서명이며 Developer ID 공증이 포함되지 않습니다.
+2026-11-12 기준 macOS에서 네 서버 버전 조회, Server 2025 체크포인트 식별, 공식 CAB 다운로드·해시 검증·기존 파일 건너뛰기를 확인했습니다. Windows 설치 파일은 Windows GitHub Actions에서 빌드하며 실제 Windows 데스크톱 실행 확인은 별도로 필요합니다. macOS 앱은 로컬 서명이며 Developer ID 공증이 포함되지 않습니다.
 
 ## 공식 자료
 
