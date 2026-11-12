@@ -1,0 +1,86 @@
+name: Build and publish KJ Patch Downloader
+
+on:
+  push:
+    branches:
+      - fix/patch-downloader-native-window
+    paths:
+      - 'utility/source/patch-downloader/**'
+      - '.github/workflows/patch-downloader-release.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  windows-installer:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install build dependencies
+        run: python -m pip install --upgrade PySide6 PyInstaller certifi
+      - name: Run core checks
+        run: python -m unittest discover -s utility/source/patch-downloader/tests -v
+      - name: Build native Windows application
+        shell: pwsh
+        run: |
+          $src = 'utility/source/patch-downloader'
+          python -m PyInstaller --noconfirm --clean --windowed --onedir `
+            --name 'KJ Patch Downloader' --icon "$src/assets/KJ-TOOL.ico" `
+            --add-data "$src/assets;assets" --collect-all PySide6 --collect-all certifi `
+            "$src/qt_app.py"
+      - name: Install Inno Setup
+        run: choco install innosetup --yes --no-progress
+      - name: Create installer
+        shell: pwsh
+        run: '& "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "utility/source/patch-downloader/scripts/installer.iss"'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: dist/KJ-Patch-Downloader-Setup.exe
+          if-no-files-found: error
+
+  mac-app:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install build dependencies
+        run: python3 -m pip install --upgrade PySide6 PyInstaller certifi
+      - name: Build native macOS app
+        run: |
+          src='utility/source/patch-downloader'
+          python3 -m PyInstaller --noconfirm --clean --windowed --onedir \
+            --name 'KJ Patch Downloader' --icon "$src/assets/KJ-TOOL.icns" \
+            --add-data "$src/assets:assets" --collect-all certifi \
+            "$src/qt_app.py"
+          ditto -c -k --sequesterRsrc --keepParent 'dist/KJ Patch Downloader.app' \
+            'dist/KJ-Patch-Downloader-Mac-AppleSilicon.zip'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mac-app
+          path: dist/KJ-Patch-Downloader-Mac-AppleSilicon.zip
+          if-no-files-found: error
+
+  publish:
+    needs: [windows-installer, mac-app]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Publish release assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create kj-utilities-2026.11.1 \
+            dist/KJ-Patch-Downloader-Setup.exe \
+            dist/KJ-Patch-Downloader-Mac-AppleSilicon.zip \
+            --repo "$GITHUB_REPOSITORY" \
+            --title 'KJ Patch Downloader · 앱 창 개선판' \
+            --notes 'Windows는 설치형으로 제공되며 설치 마법사에서 바탕화면 바로가기가 기본 선택됩니다. 시작 메뉴 바로가기도 함께 추가됩니다. Windows/macOS 모두 브라우저 대신 앱 자체 창으로 실행됩니다. macOS 앱은 Apple Developer ID 서명 및 공증이 포함되지 않아 처음 실행 시 보안 경고가 표시될 수 있습니다.'

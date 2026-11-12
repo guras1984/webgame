@@ -52,7 +52,7 @@ def main():
     copy_app(resources/'App')
     shutil.copy2(ROOT/'assets/KJ-TOOL.icns',resources/'AppIcon.icns')
     (mac/'Contents/Info.plist').write_bytes(plistlib.dumps(dict(CFBundleIdentifier='local.kj.patchdownloader',CFBundleName='KJ Patch Downloader',CFBundleExecutable='KJPatchDownloader',CFBundleIconFile='AppIcon',CFBundlePackageType='APPL',CFBundleShortVersionString='1.0',CFBundleVersion='1',LSMinimumSystemVersion='13.0',NSHighResolutionCapable=True)))
-    subprocess.run(['swiftc','-swift-version','5','-parse-as-library','-O','-target','arm64-apple-macosx13.0','-module-cache-path',str(BUILD/'swift-cache'),str(ROOT/'scripts/Launcher.swift'),'-o',str(executable/'KJPatchDownloader')],check=True)
+    subprocess.run(['swiftc','-swift-version','5','-parse-as-library','-O','-target','arm64-apple-macosx13.0','-module-cache-path',str(BUILD/'swift-cache'),'-framework','Cocoa','-framework','WebKit',str(ROOT/'scripts/Launcher.swift'),'-o',str(executable/'KJPatchDownloader')],check=True)
     subprocess.run(['codesign','--force','--deep','--sign','-',str(mac)],check=True)
     with zipfile.ZipFile(DIST/'KJ-Patch-Downloader-Windows.zip','w',zipfile.ZIP_DEFLATED) as z:
         for p in sorted(win.rglob('*')):
