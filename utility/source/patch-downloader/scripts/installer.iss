@@ -12,7 +12,7 @@ DefaultDirName={localappdata}\Programs\KJ TOOL\KJ Patch Downloader
 DefaultGroupName=KJ TOOL\KJ Patch Downloader
 DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
-OutputDir=..\..\..\dist
+OutputDir=..\..\..\..\dist
 OutputBaseFilename=KJ-Patch-Downloader-Setup
 SetupIconFile=..\assets\KJ-TOOL.ico
 UninstallDisplayIcon={app}\{#AppExeName}
@@ -28,7 +28,7 @@ RestartApplications=no
 Name: "desktopicon"; Description: "바탕화면에 바로가기 만들기"; GroupDescription: "추가 아이콘:"; Flags: checkedonce
 
 [Files]
-Source: "..\..\..\dist\KJ Patch Downloader\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\..\..\..\dist\KJ Patch Downloader\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{autoprograms}\KJ TOOL\KJ Patch Downloader"; Filename: "{app}\{#AppExeName}"; WorkingDir: "{app}"
