@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#151b17">
+<title>블록 월드 · My World</title>
+<style>
+:root{color-scheme:dark;font-family:"DM Sans",system-ui,sans-serif;background:#151b17;color:#f5f5df;--mint:#d8f57a;--muted:#aab6a7;--line:#36463c}
+*{box-sizing:border-box}body{max-width:1320px;margin:auto;padding:0 clamp(16px,4vw,56px) 40px}header{display:flex;justify-content:space-between;align-items:center;min-height:76px;border-bottom:1px solid var(--line);font-weight:800}a{color:var(--muted);text-decoration:none}a:hover{color:white}.brand{display:flex;align-items:center;gap:10px;color:#f5f5df}.brand i{width:16px;height:16px;background:var(--mint);transform:rotate(30deg) skew(-10deg);border-radius:3px;box-shadow:3px 3px #718842}
+.intro{margin:34px 0 26px}.intro h1{font-size:clamp(38px,7vw,76px);letter-spacing:-.075em;line-height:1;margin:0 0 13px}.intro p,.muted{color:var(--muted);margin:0;line-height:1.6}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:16px;align-items:start}.stage,.panel{border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#202b24}.stage{position:relative;background:#293d31}.stage canvas{display:block;width:100%;height:auto;aspect-ratio:1.5}.stagebar{display:flex;justify-content:space-between;gap:12px;padding:14px 18px;border-top:1px solid var(--line);background:#202b24;color:var(--muted);font-size:13px}.stagebar strong{color:#e3edd4}.panel{padding:22px}.panel h2{font-size:21px;margin:0 0 18px}.panel label{display:block;font-size:13px;margin:0 0 7px;color:#d6e0cf}button,input{font:inherit;border-radius:10px;min-height:44px}input{width:100%;border:1px solid #536257;background:#141c17;padding:10px 12px;color:white}button{cursor:pointer;padding:9px 12px;border:1px solid #52644f;background:#2b3a2f;color:#f5f5df;font-weight:750}button:hover{filter:brightness(1.14)}button:disabled{opacity:.62;cursor:wait}button.primary{background:var(--mint);color:#213019;border-color:transparent}.wide{width:100%;margin-top:10px}.join{border-top:1px solid var(--line);margin-top:20px;padding-top:17px}.joinrow{display:flex;gap:7px}.joinrow button{white-space:nowrap}.joinrow input{text-transform:uppercase;min-width:0;letter-spacing:.13em}.roomcode{display:block;font:800 26px ui-monospace,monospace;letter-spacing:.13em;color:var(--mint);margin:6px 0 12px}.roster{list-style:none;padding:0;margin:16px 0}.roster li{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}.roster b{margin-left:auto}.dot{border-radius:50%;width:9px;height:9px;flex:none}#status{margin-top:14px;font-size:13px;color:#f8c692}#status:empty{display:none}.gamepad{display:none;grid-template-columns:repeat(3,44px);grid-template-rows:repeat(2,44px);gap:4px;margin:0 0 14px;justify-content:center;touch-action:none}.gamepad button:first-child{grid-column:2}.gamepad button:nth-child(2){grid-column:1} [hidden]{display:none!important}
+@media(max-width:760px){header{min-height:57px}.intro{margin:24px 0 18px}.layout{grid-template-columns:1fr}.panel{padding:18px}.stagebar{font-size:12px}.stage canvas{aspect-ratio:1.5}}
+@media(pointer:coarse){.stage.playing .gamepad{display:grid}.keyboard{display:none}}
+</style>
+</head>
+<body>
+<header><span class="brand"><i aria-hidden="true"></i> MY WORLD</span><a href="https://guras1984.github.io/webgame/">게임 목록 ↗</a></header>
+<main>
+<section class="intro"><h1>블록 월드</h1><p>친구와 같은 섬에 모여 수정 조각을 모아보세요.</p></section>
+<div class="layout">
+<section class="stage" id="stage" aria-label="게임 화면">
+<canvas id="world" aria-label="블록 섬과 플레이어"></canvas>
+<div class="gamepad" aria-label="이동 버튼"><button data-key="ArrowUp" aria-label="위">↑</button><button data-key="ArrowLeft" aria-label="왼쪽">←</button><button data-key="ArrowDown" aria-label="아래">↓</button><button data-key="ArrowRight" aria-label="오른쪽">→</button></div>
+<div class="stagebar"><strong>수정의 섬</strong><span class="keyboard">WASD 또는 방향키로 이동</span></div>
+</section>
+<aside class="panel" aria-label="게임 방">
+<form id="lobby">
+<h2>친구와 플레이</h2>
+<label for="name">닉네임</label><input id="name" maxlength="12" required autocomplete="nickname" placeholder="닉네임 입력">
+<button class="primary wide" type="submit" value="create">새 방 만들기</button>
+<div class="join"><label for="code">친구의 방 코드</label><div class="joinrow"><input id="code" maxlength="6" placeholder="______" autocapitalize="characters" spellcheck="false" autocomplete="off"><button type="submit" value="join">입장</button></div></div>
+</form>
+<section id="inside" hidden>
+<h2>우리 방 <small id="count" class="muted"></small></h2>
+<span class="muted">초대 코드</span><output class="roomcode" id="roomcode"></output>
+<button class="primary wide" id="copy">초대 링크 복사</button>
+<ul class="roster" id="roster" aria-label="참가자 점수"></ul>
+<button class="wide" id="leave">방 나가기</button>
+</section>
+<p id="status" role="status"></p>
+</aside>
+</div>
+</main>
+<script>
+const get = id => document.getElementById(id);
+const params = new URLSearchParams(location.search);
+const roomCode = value => (value || '').toUpperCase().replace(/[^A-Z2-9]/g, '').slice(0, 6);
+const deployed = 'https://kj-block-world.onrender.com';
+const local = ['localhost','127.0.0.1','[::1]'].includes(location.hostname);
+const api = location.hostname.endsWith('.onrender.com') || local ? location.origin : deployed;
+get('code').value = roomCode(params.get('room'));
+
+let session, generation = 0, active, oldRoster, connecting = false;
+let game = {players:[], gems:[0,1,2,3,4,5,6]};
+const visual = new Map(), keys = new Set();
+const status = message => { get('status').textContent = message; };
+async function request(data, timeout = 6500) {
+  const response = await fetch(api + '/play', {
+    method:'POST', body:JSON.stringify(data), signal:AbortSignal.timeout(timeout)
+  });
+  const value = await response.json();
+  if (!response.ok) {
+    const error = new Error(value.error || '서버에 접속할 수 없어요.');
+    error.code = response.status;
+    throw error;
+  }
+  return value;
+}
+
+function update(value) {
+  game = value;
+  get('count').textContent = value.players.length + '/4';
+  const roster = JSON.stringify(value.players.map(({id, name, color, score}) => ({id, name, color, score})));
+  if (roster === oldRoster) return;
+  oldRoster = roster;
+  get('roster').replaceChildren(...value.players.map(player => {
+    const row = document.createElement('li');
+    const dot = document.createElement('span');
+    dot.className = 'dot';
+    dot.style.background = player.color;
+    const name = document.createElement('span');
+    name.textContent = player.name + (player.id === value.self ? ' (나)' : '');
+    const score = document.createElement('b');
+    score.textContent = player.score;
+    row.append(dot, name, score);
+    return row;
+  }));
+}
+get('lobby').addEventListener('submit', async event => {
+  event.preventDefault();
+  if (connecting) return;
+  const action = event.submitter?.value || 'create';
+  const code = roomCode(get('code').value);
+  if (action === 'join' && code.length !== 6) return status('방 코드 6자리를 입력해 주세요.');
+  const name = get('name').value.trim();
+  if (!name) return status('닉네임을 입력해 주세요.');
+  connecting = true;
+  const buttons = [...get('lobby').querySelectorAll('button')];
+  buttons.forEach(button => button.disabled = true);
+  status('서버에 연결 중이에요. 첫 접속은 잠시 걸릴 수 있어요.');
+  try {
+    const health = await fetch(api + '/health', {signal:AbortSignal.timeout(90000), cache:'no-store'});
+    if (!health.ok) throw new Error();
+    const value = await request({action, name, code});
+    session = {code:value.code, token:value.token};
+    get('roomcode').textContent = value.code;
+    get('lobby').hidden = true;
+    get('inside').hidden = false;
+    get('stage').classList.add('playing');
+    update(value);
+    status('');
+    tick(++generation);
+  } catch (error) {
+    status(error.code ? error.message : '서버에 연결하지 못했어요. 잠시 후 다시 시도해 주세요.');
+  } finally {
+    connecting = false;
+    buttons.forEach(button => button.disabled = false);
+  }
+});
+function reset(message = '') {
+  generation++;
+  session = null;
+  active = null;
+  visual.clear();
+  keys.clear();
+  game = {players:[], gems:[0,1,2,3,4,5,6]};
+  get('inside').hidden = true;
+  get('lobby').hidden = false;
+  get('stage').classList.remove('playing');
+  status(message);
+}
+get('leave').onclick = () => {
+  const previous = session;
+  reset();
+  if (previous) request({...previous, action:'leave'}).catch(() => {});
+};
+get('copy').onclick = async () => {
+  const invite = new URL(location.href);
+  invite.search = new URLSearchParams({room:session.code});
+  try {
+    await navigator.clipboard.writeText(invite.href);
+    if (session) status('초대 링크를 복사했어요.');
+  } catch {
+    if (session) status('위의 방 코드를 친구에게 보내 주세요.');
+  }
+};
+addEventListener('pagehide', () => {
+  if (session) navigator.sendBeacon(api + '/play', JSON.stringify({...session, action:'leave'}));
+  if (session) reset();
+});
+const mapping = {KeyW:'ArrowUp',KeyA:'ArrowLeft',KeyS:'ArrowDown',KeyD:'ArrowRight',
+  ArrowUp:'ArrowUp',ArrowLeft:'ArrowLeft',ArrowDown:'ArrowDown',ArrowRight:'ArrowRight'};
+addEventListener('keydown', event => {
+  if (!session || !mapping[event.code] || event.target.matches('input')) return;
+  event.preventDefault();
+  keys.add(mapping[event.code]);
+});
+addEventListener('keyup', event => keys.delete(mapping[event.code]));
+addEventListener('blur', () => keys.clear());
+document.querySelectorAll('[data-key]').forEach(button => {
+  button.onpointerdown = event => {
+    button.setPointerCapture(event.pointerId);
+    keys.add(button.dataset.key);
+  };
+  button.onlostpointercapture = () => keys.delete(button.dataset.key);
+});
+async function tick(epoch) {
+  if (epoch !== generation) return;
+  const start = performance.now();
+  const h = Number(keys.has('ArrowRight')) - Number(keys.has('ArrowLeft'));
+  const v = Number(keys.has('ArrowDown')) - Number(keys.has('ArrowUp'));
+  try {
+    const value = await request({...session, action:'step', dx:Math.sign(v + h), dy:Math.sign(v - h)});
+    if (epoch !== generation) return;
+    update(value);
+    if (active === false) status('');
+    active = true;
+  } catch (error) {
+    if (epoch !== generation) return;
+    if (error.code === 410) return reset(error.message);
+    active = false;
+    status('연결을 복구하는 중이에요.');
+  }
+  setTimeout(() => tick(epoch), active ? Math.max(0, 100 - (performance.now() - start)) : 1100);
+}
+
+const canvas = get('world');
+const ctx = canvas.getContext('2d');
+const walls = [[3,4],[3,5],[3,6],[7,4],[8,4],[7,8],[4,7]];
+const gems = [[1,5],[4,2],[8,3],[10,6],[8,9],[4,10],[6,6]];
+const trees = [[1,1],[10,1],[1,10],[10,10],[6,1]];
+const floor = ['#83a962','#7aa05c','#76a060','#8bad68','#7ea35d'];
+const grass = (x,y) => y === 6 || x === 6 ? '#b1b280' : floor[(x * 17 + y * 7 + x*y) % floor.length];
+const project = (x,y,z=0) => [450 + (x-y)*28, 104 + (x+y)*15 - z];
+function poly(points, color) {
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  points.forEach(([x,y],i) => i ? ctx.lineTo(x,y) : ctx.moveTo(x,y));
+  ctx.closePath();
+  ctx.fill();
+}
+function block(x,y,w,bottom,top,colors) {
+  const corner = (a,b,z) => project(x+a*w/2,y+b*w/2,z);
+  const [n,e,s,l] = [corner(-1,-1,top),corner(1,-1,top),corner(1,1,top),corner(-1,1,top)];
+  const [eb,sb,lb] = [corner(1,-1,bottom),corner(1,1,bottom),corner(-1,1,bottom)];
+  poly([e,s,sb,eb], colors[1]);
+  poly([s,l,lb,sb], colors[2]);
+  poly([n,e,s,l], colors[0]);
+}
+const terrain = document.createElement('canvas');
+terrain.width = 900;
+terrain.height = 600;
+const ground = terrain.getContext('2d');
+function startScene() {
+  const bg = ctx.createLinearGradient(0,0,0,600);
+  bg.addColorStop(0,'#293e34');
+  bg.addColorStop(1,'#17251f');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0,0,900,600);
+  for (let i=0;i<110;i++) {
+    ctx.fillStyle = i % 2 ? '#b6d9a416' : '#b6d9a429';
+    ctx.fillRect((i*73+19)%900,(i*137+28)%620,2+(i%3),2);
+  }
+  ctx.fillStyle = '#101b1777';
+  ctx.beginPath();
+  ctx.ellipse(450,515,235,30,0,0,Math.PI*2);
+  ctx.fill();
+  for (let x=0;x<12;x++) for (let y=0;y<12;y++) {
+    block(x+.5,y+.5,1.02,-44-(x*29+y*13)%13,0,[grass(x,y),'#405c3d','#527551']);
+  }
+  ground.drawImage(canvas,0,0);
+}
+canvas.width = 900;
+canvas.height = 600;
+startScene();
+function draw(now) {
+  ctx.drawImage(terrain,0,0);
+  const items = [];
+  for (const [x,y] of walls) items.push({x,y,draw:() => {
+    block(x,y,.94,0,26,['#ced4a0','#767d61','#979e78']);
+    block(x,y,.9,26,30,['#d8dcaa','#919779','#aeb18b']);
+  }});
+  for (const [x,y] of trees) items.push({x,y,draw:() => {
+    block(x,y,.22,0,23,['#a77c55','#644e3e','#81664d']);
+    block(x,y,.90,20,49,['#bad878','#4c7e51','#699859']);
+    block(x,y,.62,48,62,['#d1e38a','#6d9b5a','#8bb562']);
+  }});
+  for (const i of game.gems) {
+    const [x,y] = gems[i];
+    items.push({x,y,draw:() => {
+      const [a,b] = project(x,y,12 + Math.sin(now/350+i)*4);
+      poly([[a,b-14],[a+10,b-4],[a,b+9],[a-10,b-4]],'#9cf4e1');
+      poly([[a,b-14],[a+10,b-4],[a,b+9]],'#4db8af');
+      poly([[a,b-14],[a,b+9],[a-10,b-4]],'#d2fff1');
+    }});
+  }
+  for (const id of visual.keys()) if (!game.players.some(p => p.id === id)) visual.delete(id);
+  for (const player of game.players) {
+    const p = visual.get(player.id) || {x:player.x,y:player.y};
+    p.x += (player.x-p.x)*.23;
+    p.y += (player.y-p.y)*.23;
+    visual.set(player.id,p);
+    const {x,y} = p;
+    items.push({x,y,draw:() => {
+      const [sx,sy] = project(x,y);
+      ctx.fillStyle = player.id === game.self ? '#f9f5bfa0' : '#20332270';
+      ctx.beginPath();
+      ctx.ellipse(sx,sy,14,6,0,0,Math.PI*2);
+      ctx.fill();
+      block(x,y,.44,1,13,['#5e6d72','#27343d','#39494f']);
+      block(x,y,.54,12,28,[player.color,'#35494b',player.color]);
+      block(x,y,.39,28,43,['#ffe3bc','#ba8f74','#e9ba94']);
+      ctx.font = 'bold 14px system-ui';
+      ctx.textAlign = 'center';
+      const label = player.name;
+      const width = ctx.measureText(label).width + 14;
+      ctx.fillStyle = '#15241ee8';
+      ctx.fillRect(sx-width/2,sy-68,width,21);
+      ctx.fillStyle = '#fff9e2';
+      ctx.fillText(label,sx,sy-53);
+    }});
+  }
+  items.sort((a,b) => a.x+a.y-b.x-b.y).forEach(item => item.draw());
+  requestAnimationFrame(draw);
+}
+requestAnimationFrame(draw);
+</script>
+</body>
+</html>
